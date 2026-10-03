@@ -100,6 +100,15 @@ const collegeData = {
         "DSTL",
         "UHV",
         "PYTHON"
+      ],
+      "Semester 5": [
+        "DBMS",
+        "AI",
+        "DAA",
+        "Object Oriented System Design",
+        "Cloud Computing",
+        "Data Encryption",
+        "Essence of Indian Traditional Knowledge"
       ]
     },
 
@@ -190,6 +199,11 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUpload, setShowUpload] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminLoggingIn, setAdminLoggingIn] = useState(false);
   const [uploadCollege, setUploadCollege] = useState("");
   const [uploadCourse, setUploadCourse] = useState("");
   const [uploadBranch, setUploadBranch] = useState("");
@@ -220,7 +234,68 @@ function App() {
 
   fetchPapers();
 }, []);
+useEffect(() => {
+  const checkAdminSession = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
+    setAdminUser(session?.user ?? null);
+  };
+
+  checkAdminSession();
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    setAdminUser(session?.user ?? null);
+  });
+
+  return () => subscription.unsubscribe();
+}, []);
+const handleAdminLogin = async (e) => {
+  e.preventDefault();
+
+  setAdminLoggingIn(true);
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: adminEmail,
+    password: adminPassword,
+  });
+
+  if (error) {
+    console.error("Admin login error:", error);
+    alert("Invalid admin email or password.");
+    setAdminLoggingIn(false);
+    return;
+  }
+
+  setAdminUser(data.user);
+  setAdminEmail("");
+  setAdminPassword("");
+  setShowAdminLogin(false);
+  setShowAdmin(true);
+  setAdminLoggingIn(false);
+
+  await fetchPendingPapers();
+  await fetchRejectedPapers();
+  };
+const handleAdminLogout = async () => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error("Admin logout error:", error);
+    alert("Logout failed.");
+    return;
+  }
+
+  setAdminUser(null);
+  setShowAdmin(false);
+  setPendingPapers([]);
+  setRejectedPapers([]);
+
+  alert("Admin logged out successfully! 👋");
+};
   const courses = college
     ? Object.keys(collegeData[college])
     : [];
@@ -611,9 +686,13 @@ const handleRestore = async (paperId) => {
      <button
   className="admin-button"
   onClick={() => {
-    setShowAdmin(true);
-    fetchPendingPapers();
-    fetchRejectedPapers();
+    if (adminUser) {
+      setShowAdmin(true);
+      fetchPendingPapers();
+      fetchRejectedPapers();
+    } else {
+      setShowAdminLogin(true);
+    }
   }}
 >
   👑 Admin
@@ -628,14 +707,72 @@ const handleRestore = async (paperId) => {
   </div>
 
 </nav>
+{showAdminLogin && (
+  <div className="upload-overlay">
+    <div className="upload-box">
+
+      <button
+        className="close-button"
+        onClick={() => {
+          setShowAdminLogin(false);
+          setAdminEmail("");
+          setAdminPassword("");
+        }}
+      >
+        ✕
+      </button>
+
+      <h2>👑 Admin Login</h2>
+
+      <p>
+        Login to access the PaperVault admin panel.
+      </p>
+
+      <form
+        className="upload-form"
+        onSubmit={handleAdminLogin}
+      >
+        <input
+          type="email"
+          placeholder="Admin Email"
+          value={adminEmail}
+          onChange={(e) => setAdminEmail(e.target.value)}
+          required
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={adminPassword}
+          onChange={(e) => setAdminPassword(e.target.value)}
+          required
+        />
+
+        <button
+          type="submit"
+          disabled={adminLoggingIn}
+        >
+          {adminLoggingIn ? "Logging in..." : "Login as Admin"}
+        </button>
+      </form>
+
+    </div>
+  </div>
+)}
 {/* Admin Panel */}
-  {showAdmin && (
+  {showAdmin && adminUser && (
     <div className="admin-panel">
 
       <div className="admin-header">
 
         <div>
           <h2>👑 Admin Panel</h2>
+          <button
+  className="admin-logout-button"
+  onClick={handleAdminLogout}
+>
+  Logout
+</button>
           <p>Manage, review and approve uploaded question papers</p>
         </div>
 
