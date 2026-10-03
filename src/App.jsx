@@ -606,32 +606,111 @@ const handleReject = async (paperId) => {
     "Are you sure you want to reject this paper?"
   );
 
-  if (!confirmed) {
-    return;
-  }
+  if (!confirmed) return;
 
   console.log("Reject clicked, ID:", paperId);
 
-  const { error } = await supabase
+  // 1. Get paper details
+  const { data: paper, error: fetchError } = await supabase
     .from("papers")
-    .update({ status: "rejected" })
-    .eq("id", paperId);
+    .select("id, pdf_url")
+    .eq("id", paperId)
+    .single();
 
-  if (error) {
-    console.error("Reject error:", error);
-    alert("Reject failed: " + error.message);
+  if (fetchError) {
+    console.error("Fetch paper error:", fetchError);
+    alert("Could not find paper: " + fetchError.message);
     return;
   }
 
-  alert("Paper rejected ❌");
+  console.log("Paper found:", paper);
 
-  await fetchPendingPapers();
+  // 2. Get file path from PDF URL
+  const pdfUrl = paper.pdf_url;
+  const marker = "/storage/v1/object/public/papers/";
 
-  const { data: allPapers } = await supabase
+  if (!pdfUrl || !pdfUrl.includes(marker)) {
+    console.error("Invalid PDF URL:", pdfUrl);
+    alert("Invalid paper PDF URL.");
+    return;
+  }
+
+  const filePath = decodeURIComponent(
+    pdfUrl.split(marker)[1]
+  );
+
+  console.log("Deleting Storage file:", filePath);
+
+  // 3. Delete PDF from Storage
+  const { data: storageData, error: storageError } =
+    await supabase.storage
+      .from("papers")
+      .remove([filePath]);
+
+  console.log("Storage delete result:", storageData);
+  console.log("Storage delete error:", storageError);
+
+  if (storageError) {
+    alert("Could not delete PDF: " + storageError.message);
+    return;
+  }
+
+  // 4. Delete database row
+  const { data: deletedRows, error: deleteError } = await supabase
     .from("papers")
-    .select("*");
+    .delete()
+    .eq("id", paperId)
+    .select("id");
 
-  setPaperData(allPapers || []);
+  console.log("Deleted database rows:", deletedRows);
+  console.log("Database delete error:", deleteError);
+
+  if (deleteError) {
+    console.error("Database delete error:", deleteError);
+
+    alert(
+      "Database record delete failed:\n" +
+      deleteError.message
+    );
+
+    return;
+  }
+
+  // IMPORTANT: DELETE succeeded technically,
+  // but check whether any row was actually deleted.
+  if (!deletedRows || deletedRows.length === 0) {
+    console.error(
+      "NO ROW WAS DELETED. Possible RLS DELETE policy issue.",
+      paperId
+    );
+
+    alert(
+      "Paper could not be deleted from database.\n\n" +
+      "Most likely Supabase RLS DELETE policy is blocking it."
+    );
+
+    return;
+  }
+
+  console.log("Successfully deleted:", deletedRows);
+
+  // 5. Remove from UI immediately
+  setPendingPapers((prev) =>
+    prev.filter((paper) => paper.id !== paperId)
+  );
+
+  setRejectedPapers((prev) =>
+    prev.filter((paper) => paper.id !== paperId)
+  );
+
+  setPaperData((prev) =>
+    prev.filter((paper) => paper.id !== paperId)
+  );
+
+  // 6. Refresh from Supabase
+  await refreshAdminPapers();
+
+  alert("Paper rejected and completely removed ❌");
 };
 const handleRestore = async (paperId) => {
   const confirmed = window.confirm(
