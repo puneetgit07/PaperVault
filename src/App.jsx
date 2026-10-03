@@ -199,6 +199,23 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUpload, setShowUpload] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
+  const [landingExiting, setLandingExiting] = useState(false);
+  const goToBrowse = () => {
+  setLandingExiting(true);
+
+  setTimeout(() => {
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+
+      setLandingExiting(false);
+    }, 100);
+  }, 300);
+};
   const [adminUser, setAdminUser] = useState(null);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminEmail, setAdminEmail] = useState("");
@@ -663,7 +680,399 @@ const handleRestore = async (paperId) => {
 
   return matchesFilters && matchesSearch;
 });
+if (showLanding) {
+  return (
+    <div className={`app landing-page ${landingExiting ? "landing-exiting" : ""}`}>
+      {/* Landing Navbar */}
+      <nav className="landing-navbar">
 
+        <div className="landing-logo">
+          <img
+            src="/papervault-logo.png"
+            alt="PaperVault"
+            className="landing-logo-image"
+          />
+        </div>
+
+        <div className="landing-nav-links">
+          <button
+  onClick={() => {
+    document.getElementById("landing-home")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }}
+>
+  Home
+</button>
+
+          <button
+  onClick={() => {
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 100);
+  }}
+>
+  Browse Papers
+</button>
+
+          <button
+            onClick={() => {
+              setShowLanding(false);
+              setShowUpload(true);
+            }}
+            className="landing-upload-nav"
+          >
+            Upload
+          </button>
+
+          <button
+  onClick={() => {
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 100);
+  }}
+  className="landing-get-started"
+>
+  Get Started →
+</button>
+        </div>
+
+      </nav>
+
+
+      {/* Hero */}
+      <section className="landing-hero" id="landing-home">
+
+        {/* Floating decorative elements */}
+        <div className="floating-paper floating-paper-one">📄</div>
+        <div className="floating-paper floating-paper-two">📚</div>
+        <div className="floating-star">✦</div>
+        <div className="floating-dot floating-dot-one"></div>
+        <div className="floating-dot floating-dot-two"></div>
+
+        <div className="landing-hero-content">
+
+          <div className="landing-badge">
+            🎓 Built for Students
+          </div>
+
+          <h1>
+            Previous Papers.
+            <br />
+            <span>Better Preparation.</span>
+          </h1>
+
+          <p>
+            Find, share and organize previous-year question papers
+            from your college. Study smarter, not harder.
+          </p>
+
+          <div className="landing-actions">
+
+            <button
+              className="landing-primary-btn"
+              onClick={() => setShowLanding(false)}
+            >
+              Browse Papers
+              <span>→</span>
+            </button>
+
+            <button
+              className="landing-secondary-btn"
+              onClick={() => {
+                setShowLanding(false);
+                setShowUpload(true);
+              }}
+            >
+              Upload a Paper
+            </button>
+
+          </div>
+
+        </div>
+
+
+        {/* Hero visual */}
+        {/* Hero visual */}
+<div className="landing-visual paper-hero">
+
+  <div className="hero-paper hero-paper-back"></div>
+
+  <div className="hero-paper hero-paper-middle"></div>
+
+  <div className="hero-paper hero-paper-front">
+
+    <div className="question-paper-label">
+      QUESTION
+      <br />
+      PAPER
+    </div>
+
+    <div className="question-paper-lines">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div className="question-paper-circle">
+      PV
+    </div>
+
+  </div>
+
+</div>
+
+      </section>
+
+
+      {/* Why PaperVault */}
+      <section className="why-section">
+
+        <div className="section-heading">
+          <span>WHY PAPERVAULT?</span>
+          <h2>Everything you need to prepare better.</h2>
+          <p>
+            One simple platform to find and share question papers.
+          </p>
+        </div>
+
+        <div className="feature-grid">
+
+          <div
+  className="feature-card feature-clickable"
+  onClick={() => {
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 100);
+  }}
+>
+  <div className="feature-icon">🔎</div>
+  <h3>Find Papers</h3>
+  <p>
+    Quickly discover papers according to your college, branch, semester and subject.
+  </p>
+  <span className="feature-link">Explore Papers →</span>
+</div>
+
+          <div
+  className="feature-card feature-clickable"
+  onClick={() => {
+    setShowLanding(false);
+    setShowUpload(true);
+  }}
+>
+  <div className="feature-icon">📤</div>
+  <h3>Upload Papers</h3>
+  <p>
+    Share useful question papers and help other students prepare for their exams.
+  </p>
+  <span className="feature-link">Upload a Paper →</span>
+</div>
+
+          <div className="feature-card">
+            <div className="feature-icon">📚</div>
+            <h3>Stay Organized</h3>
+            <p>
+              Keep previous-year papers structured by college,
+              semester and subject.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon">🎯</div>
+            <h3>Prepare Better</h3>
+            <p>
+              Practice with previous papers and understand what
+              to expect before your exams.
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* How it works */}
+      <section className="how-section">
+
+        <div className="section-heading">
+          <span>HOW IT WORKS</span>
+          <h2>Find your paper in four simple steps.</h2>
+        </div>
+
+        <div className="steps-grid">
+
+  <div
+    className="step-card step-clickable"
+    onClick={() => {
+      setShowLanding(false);
+      setTimeout(() => {
+        document.getElementById("browse")?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 100);
+    }}
+  >
+    <div className="step-number">01</div>
+    <div className="step-icon">🏫</div>
+    <h3>Select College</h3>
+    <p>Choose your college.</p>
+  </div>
+
+  <div
+    className="step-card step-clickable"
+    onClick={() => {
+      setShowLanding(false);
+      setTimeout(() => {
+        document.getElementById("browse")?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 100);
+    }}
+  >
+    <div className="step-number">02</div>
+    <div className="step-icon">💻</div>
+    <h3>Choose Branch</h3>
+    <p>Select your course and branch.</p>
+  </div>
+
+  <div
+    className="step-card step-clickable"
+    onClick={() => {
+      setShowLanding(false);
+      setTimeout(() => {
+        document.getElementById("browse")?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 100);
+    }}
+  >
+    <div className="step-number">03</div>
+    <div className="step-icon">📖</div>
+    <h3>Select Semester</h3>
+    <p>Pick your semester and subject.</p>
+  </div>
+
+  <div
+    className="step-card step-clickable"
+    onClick={() => {
+      setShowLanding(false);
+      setTimeout(() => {
+        document.getElementById("browse")?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 100);
+    }}
+  >
+    <div className="step-number">04</div>
+    <div className="step-icon">📄</div>
+    <h3>Get Papers</h3>
+    <p>View and download papers.</p>
+  </div>
+
+</div>
+      </section>
+
+
+      {/* CTA */}
+      <section className="landing-cta">
+
+        <div className="cta-floating-circle"></div>
+
+        <div>
+          <span>READY TO PREPARE?</span>
+
+          <h2>
+            Your next exam starts
+            <br />
+            with the right paper.
+          </h2>
+
+          <p>
+            Explore previous-year question papers and prepare
+            with confidence.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowLanding(false)}
+          className="cta-button"
+        >
+          Browse Papers →
+        </button>
+
+      </section>
+
+
+      {/* Landing Footer */}
+      <footer className="landing-footer">
+
+        <div className="landing-footer-brand">
+
+          <img
+            src="/papervault-logo.png"
+            alt="PaperVault"
+          />
+
+          <p>
+            Previous papers. Better preparation.
+          </p>
+
+        </div>
+
+        <div className="landing-footer-links">
+  <button onClick={() => setShowLanding(false)}>
+    Browse Papers
+  </button>
+
+  <button
+    onClick={() => {
+      setShowLanding(false);
+      setShowUpload(true);
+    }}
+  >
+    Upload Paper
+  </button>
+</div>
+
+<div className="landing-footer-contact">
+  <span>CONTACT</span>
+
+  <a href="mailto:papervault34@gmail.com">
+    ✉ papervault34@gmail.com
+  </a>
+
+  <a
+    href="https://www.instagram.com/papervault34"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    ◎ @papervault34
+  </a>
+</div>
+
+        <div className="landing-footer-bottom">
+          © {new Date().getFullYear()} PaperVault • Built for Students 🎓
+        </div>
+
+      </footer>
+
+    </div>
+  );
+}
   return (
     <div className="app">
 
