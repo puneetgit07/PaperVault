@@ -224,6 +224,8 @@ function App() {
   const [uploadCollege, setUploadCollege] = useState("");
   const [uploadCourse, setUploadCourse] = useState("");
   const [uploadBranch, setUploadBranch] = useState("");
+  const [branchMode, setBranchMode] = useState("single");
+  const [selectedBranches, setSelectedBranches] = useState([]);
   const [uploadSemester, setUploadSemester] = useState("");
   const [uploadSubject, setUploadSubject] = useState("");
   const [uploadYear, setUploadYear] = useState("");
@@ -237,7 +239,12 @@ function App() {
   const fetchPapers = async () => {
     const { data, error } = await supabase
       .from("papers")
-      .select("*");
+      .select(`
+        *,
+        paper_branches (
+          branch
+        )
+      `);
 
     if (error) {
       console.error("Error fetching papers:", error);
@@ -246,7 +253,7 @@ function App() {
 
     console.log("Papers from Supabase:", data);
 
-    setPaperData(data);
+    setPaperData(data || []);
   };
 
   fetchPapers();
@@ -385,11 +392,12 @@ const handleAdminLogout = async () => {
     alert("Download failed. Please try again.");
   }
 };
-  const handleUpload = async () => {
+const handleUpload = async () => {
   if (
     !uploadCollege ||
     !uploadCourse ||
-    !uploadBranch ||
+    (branchMode === "single" && !uploadBranch) ||
+    (branchMode === "selected" && selectedBranches.length === 0) ||
     !uploadSemester ||
     !uploadSubject ||
     !uploadYear ||
@@ -404,51 +412,90 @@ const handleAdminLogout = async () => {
     alert("Only PDF files are allowed.");
     return;
   }
+
   const currentYear = new Date().getFullYear();
   const enteredYear = Number(uploadYear);
+  const minimumYear = currentYear - 5;
 
-    const minimumYear = currentYear - 5;
+  if (
+    !/^\d{4}$/.test(uploadYear) ||
+    enteredYear < minimumYear ||
+    enteredYear > currentYear
+  ) {
+    alert(
+      `Only papers from the last 5 years are allowed (${minimumYear}-${currentYear}).`
+    );
+    return;
+  }
 
-if (
-  !/^\d{4}$/.test(uploadYear) ||
-  enteredYear < minimumYear ||
-  enteredYear > currentYear
-) {
-  alert(
-    `Only papers from the last 5 years are allowed (${minimumYear}-${currentYear}).`
-  );
-  return;
-}
-  const maxSize = 10 * 1024 * 1024; // 10 MB
+  const maxSize = 10 * 1024 * 1024;
 
-if (uploadFile.size > maxSize) {
-  alert("PDF size must be less than 10 MB.");
-  return;
-}
+  if (uploadFile.size > maxSize) {
+    alert("PDF size must be less than 10 MB.");
+    return;
+  }
 
   try {
     setUploading(true);
-      const { data: existingPapers, error: duplicateError } = await supabase
-  .from("papers")
-  .select("id, status")
-  .eq("college", uploadCollege)
-  .eq("course", uploadCourse)
-  .eq("branch", uploadBranch)
-  .eq("semester", uploadSemester)
-  .eq("subject", uploadSubject)
-  .eq("year", Number(uploadYear))
-  .eq("exam_type", uploadExamType);
 
-if (duplicateError) {
-  throw duplicateError;
-}
+    // Branches that this paper will belong to
+    const branchesToSave =
+      branchMode === "all"
+        ? Object.keys(collegeData[uploadCollege][uploadCourse])
+        : branchMode === "selected"
+        ? selectedBranches
+        : [uploadBranch];
 
-if (existingPapers && existingPapers.length > 0) {
-  alert(
-    "This paper already exists for the selected details. Please upload a different paper."
-  );
-  return;
-}
+    // Check existing papers
+    const { data: existingPapers, error: duplicateError } = await supabase
+      .from("papers")
+      .select(`
+        id,
+        status,
+        branch,
+        paper_branches (
+          branch
+        )
+      `)
+      .eq("college", uploadCollege)
+      .eq("course", uploadCourse)
+      .eq("semester", uploadSemester)
+      .eq("subject", uploadSubject)
+      .eq("year", Number(uploadYear))
+      .eq("exam_type", uploadExamType);
+
+    if (duplicateError) {
+      throw duplicateError;
+    }
+
+    // Check if any selected branch already has this paper
+    const duplicatePaper = existingPapers?.find((paper) => {
+      let existingBranches = [];
+
+      // New papers: branches stored in paper_branches
+      if (paper.paper_branches?.length > 0) {
+        existingBranches = paper.paper_branches.map(
+          (item) => item.branch
+        );
+      }
+
+      // Old papers: branch stored directly in papers table
+      else if (paper.branch && paper.branch !== "MULTIPLE") {
+        existingBranches = [paper.branch];
+      }
+
+      return branchesToSave.some((branch) =>
+        existingBranches.includes(branch)
+      );
+    });
+
+    if (duplicatePaper) {
+      alert(
+        "This paper already exists for one or more selected branches."
+      );
+      return;
+    }
+
     // Unique file name
     const fileName = `${Date.now()}-${uploadFile.name}`;
 
@@ -468,63 +515,97 @@ if (existingPapers && existingPapers.length > 0) {
 
     const pdfUrl = urlData.publicUrl;
 
-    // Insert paper information into database
-    const { error: dbError } = await supabase
+    // Insert paper
+    const { data: insertedPaper, error: dbError } = await supabase
       .from("papers")
       .insert([
         {
           college: uploadCollege,
           course: uploadCourse,
-          branch: uploadBranch,
+          branch: "MULTIPLE",
           semester: uploadSemester,
           subject: uploadSubject,
           year: Number(uploadYear),
           exam_type: uploadExamType,
           pdf_url: pdfUrl,
         },
-      ]);
+      ])
+      .select()
+      .single();
 
     if (dbError) {
-  await supabase.storage
-    .from("papers")
-    .remove([fileName]);
+      await supabase.storage
+        .from("papers")
+        .remove([fileName]);
 
-  throw dbError;
-}
+      throw dbError;
+    }
+
+    // Create branch mappings
+    const branchMappings = branchesToSave.map((branch) => ({
+      paper_id: insertedPaper.id,
+      branch: branch,
+    }));
+
+    const { error: branchError } = await supabase
+      .from("paper_branches")
+      .insert(branchMappings);
+
+    if (branchError) {
+      console.error("Branch mapping error:", branchError);
+
+      await supabase.storage
+        .from("papers")
+        .remove([fileName]);
+
+      throw branchError;
+    }
 
     alert(
-  "Paper uploaded successfully! 🎉\n\nYour paper is now pending admin approval."
-);
+      "Paper uploaded successfully! 🎉\n\nYour paper is now pending admin approval."
+    );
 
-// Refresh papers
-const { data } = await supabase
-  .from("papers")
-  .select("*");
+    // Refresh papers with branch mappings
+    const { data: refreshedPapers, error: refreshError } =
+      await supabase
+        .from("papers")
+        .select(`
+          *,
+          paper_branches (
+            branch
+          )
+        `);
 
-setPaperData(data || []);
+    if (refreshError) {
+      console.error("Refresh error:", refreshError);
+    }
 
-// Reset upload form
-      setUploadCollege("");
-      setUploadCourse("");
-      setUploadBranch("");
-      setUploadSemester("");
-      setUploadSubject("");
-      setUploadYear("");
-      setUploadExamType("");
-      setUploadFile(null);
+    setPaperData(refreshedPapers || []);
 
-      // Close form
-      setShowUpload(false);
+    // Reset upload form
+    setUploadCollege("");
+    setUploadCourse("");
+    setUploadBranch("");
+    setUploadSemester("");
+    setUploadSubject("");
+    setBranchMode("single");
+    setSelectedBranches([]);
+    setUploadYear("");
+    setUploadExamType("");
+    setUploadFile(null);
+
+    // Close upload form
+    setShowUpload(false);
 
   } catch (error) {
-  console.error("Upload error:", error);
+    console.error("Upload error:", error);
 
-  alert(
-    "Upload failed. Please check your PDF and try again."
-  );
-} finally {
-  setUploading(false);
-}
+    alert(
+      "Upload failed. Please check your PDF and try again."
+    );
+  } finally {
+    setUploading(false);
+  }
 };
 const fetchPendingPapers = async () => {
   const { data, error } = await supabase
@@ -744,11 +825,21 @@ const handleRestore = async (paperId) => {
   setPaperData(allPapers || []);
 };
   const filteredPapers = paperData.filter((paper) => {
+
+  const branchMatches =
+    paper.branch?.trim() === branch.trim() ||
+    (
+      paper.branch?.trim() === "MULTIPLE" &&
+      paper.paper_branches?.some(
+        (item) => item.branch?.trim() === branch.trim()
+      )
+    );
+
   const matchesFilters =
     paper.status === "approved" &&
     paper.college?.trim() === college.trim() &&
     paper.course?.trim() === course.trim() &&
-    paper.branch?.trim() === branch.trim() &&
+    branchMatches &&
     paper.semester?.trim() === semester.trim() &&
     paper.subject?.trim() === subject.trim();
 
@@ -1493,26 +1584,87 @@ if (showLanding) {
     ))}
 </select>
       <select
-  value={uploadBranch}
+  value={branchMode}
   onChange={(e) => {
-    setUploadBranch(e.target.value);
+    setBranchMode(e.target.value);
+    setUploadBranch("");
+    setSelectedBranches([]);
     setUploadSemester("");
     setUploadSubject("");
   }}
   disabled={!uploadCourse}
 >
-  <option value="">Select Branch</option>
-
-  {uploadCollege &&
-    uploadCourse &&
-    Object.keys(collegeData[uploadCollege][uploadCourse]).map(
-      (branchName) => (
-        <option key={branchName} value={branchName}>
-          {branchName}
-        </option>
-      )
-    )}
+  <option value="single">Single Branch</option>
+  <option value="selected">Selected Branches</option>
+  <option value="all">All Branches</option>
 </select>
+
+{branchMode === "single" && (
+  <select
+    value={uploadBranch}
+    onChange={(e) => {
+      setUploadBranch(e.target.value);
+      setUploadSemester("");
+      setUploadSubject("");
+    }}
+    disabled={!uploadCourse}
+  >
+    <option value="">Select Branch</option>
+
+    {uploadCollege &&
+      uploadCourse &&
+      Object.keys(collegeData[uploadCollege][uploadCourse]).map(
+        (branchName) => (
+          <option key={branchName} value={branchName}>
+            {branchName}
+          </option>
+        )
+      )}
+  </select>
+)}
+
+{branchMode === "selected" && (
+  <div className="branch-checkboxes">
+    <p>Select Branches:</p>
+
+    {uploadCollege &&
+      uploadCourse &&
+      Object.keys(collegeData[uploadCollege][uploadCourse]).map(
+        (branchName) => (
+          <label key={branchName}>
+            <input
+              type="checkbox"
+              value={branchName}
+              checked={selectedBranches.includes(branchName)}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setSelectedBranches([
+                    ...selectedBranches,
+                    branchName,
+                  ]);
+                } else {
+                  setSelectedBranches(
+                    selectedBranches.filter(
+                      (branch) => branch !== branchName
+                    )
+                  );
+                }
+                setUploadSemester("");
+                setUploadSubject("");
+              }}
+            />
+            {branchName}
+          </label>
+        )
+      )}
+  </div>
+)}
+
+{branchMode === "all" && (
+  <div className="all-branches-message">
+    ✅ This paper will be available for all branches.
+  </div>
+)}
 
       <select
   value={uploadSemester}
@@ -1520,20 +1672,37 @@ if (showLanding) {
     setUploadSemester(e.target.value);
     setUploadSubject("");
   }}
-  disabled={!uploadBranch}
+  disabled={
+    !uploadCourse ||
+    (branchMode === "single" && !uploadBranch) ||
+    (branchMode === "selected" && selectedBranches.length === 0)
+  }
 >
   <option value="">Select Semester</option>
 
   {uploadCollege &&
     uploadCourse &&
-    uploadBranch &&
-    Object.keys(
-      collegeData[uploadCollege][uploadCourse][uploadBranch]
-    ).map((semesterName) => (
-      <option key={semesterName} value={semesterName}>
-        {semesterName}
-      </option>
-    ))}
+    (() => {
+      const branches =
+        branchMode === "all"
+          ? Object.keys(collegeData[uploadCollege][uploadCourse])
+          : branchMode === "selected"
+          ? selectedBranches
+          : uploadBranch
+          ? [uploadBranch]
+          : [];
+
+      if (branches.length === 0) return null;
+
+      const firstBranch =
+        collegeData[uploadCollege][uploadCourse][branches[0]];
+
+      return Object.keys(firstBranch).map((semesterName) => (
+        <option key={semesterName} value={semesterName}>
+          {semesterName}
+        </option>
+      ));
+    })()}
 </select>
 
       <select
@@ -1545,15 +1714,37 @@ if (showLanding) {
 
   {uploadCollege &&
     uploadCourse &&
-    uploadBranch &&
     uploadSemester &&
-    collegeData[uploadCollege][uploadCourse][uploadBranch][uploadSemester].map(
-      (subjectName) => (
+    (() => {
+      const branches =
+        branchMode === "all"
+          ? Object.keys(collegeData[uploadCollege][uploadCourse])
+          : branchMode === "selected"
+          ? selectedBranches
+          : uploadBranch
+          ? [uploadBranch]
+          : [];
+
+      if (branches.length === 0) return null;
+
+      const subjectLists = branches.map(
+        (branch) =>
+          collegeData[uploadCollege][uploadCourse][branch][
+            uploadSemester
+          ] || []
+      );
+
+      // Only subjects common to all selected branches
+      const commonSubjects = subjectLists[0].filter((subject) =>
+        subjectLists.every((list) => list.includes(subject))
+      );
+
+      return commonSubjects.map((subjectName) => (
         <option key={subjectName} value={subjectName}>
           {subjectName}
         </option>
-      )
-    )}
+      ));
+    })()}
 </select>
 
       <input
