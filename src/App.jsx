@@ -200,6 +200,7 @@ function App() {
   const [showUpload, setShowUpload] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [activePage, setActivePage] = useState("home");
   const [landingExiting, setLandingExiting] = useState(false);
   const goToBrowse = () => {
   setLandingExiting(true);
@@ -850,6 +851,1040 @@ const handleRestore = async (paperId) => {
 
   return matchesFilters && matchesSearch;
 });
+if (activePage === "about") {
+  return (
+    <div className="app">
+      <nav className="navbar">
+        <div className="logo">
+          <img
+            src="/papervault-logo.png"
+            alt="PaperVault"
+            className="logo-image"
+          />
+        </div>
+
+        <div className="nav-links">
+          <button onClick={() => setActivePage("home")}>
+            Home
+          </button>
+
+          <button
+            onClick={() => {
+              setActivePage("home");
+
+              setTimeout(() => {
+                document.getElementById("browse")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }, 100);
+            }}
+          >
+            Browse Papers
+          </button>
+        </div>
+      </nav>
+
+      <main className="legal-page">
+        <div className="legal-container">
+
+          <span className="legal-badge">ABOUT PAPERVAULT</span>
+
+          <h1>About Us</h1>
+
+          <p className="legal-intro">
+            PaperVault is a student-focused platform designed to make
+            previous-year question papers easier to find, organize and
+            access.
+          </p>
+
+          <section>
+            <h2>Our Mission</h2>
+            <p>
+              Our mission is to help students prepare better by bringing
+              question papers together in one simple and organized platform.
+              Instead of searching through different sources, students can
+              browse papers according to their college, course, branch,
+              semester and subject.
+            </p>
+          </section>
+
+          <section>
+            <h2>What We Provide</h2>
+            <p>
+              PaperVault allows students to discover and download available
+              previous-year question papers. Students can also contribute
+              useful papers to help other learners.
+            </p>
+          </section>
+
+          <section>
+            <h2>Built for Students</h2>
+            <p>
+              PaperVault is built with students in mind. We aim to keep the
+              platform simple, organized and useful for exam preparation.
+              Uploaded papers are reviewed before they become publicly
+              available on the platform.
+            </p>
+          </section>
+
+          <section>
+            <h2>Our Vision</h2>
+            <p>
+              We want to build a reliable academic resource where students
+              from different colleges can easily access useful previous-year
+              papers and prepare with greater confidence.
+            </p>
+          </section>
+
+          <section>
+            <h2>Contact Us</h2>
+            <p>
+              Have a question, suggestion or concern about PaperVault?
+              You can reach us at{" "}
+              <a href="mailto:papervault34@gmail.com">
+                papervault34@gmail.com
+              </a>.
+            </p>
+          </section>
+
+        </div>
+      </main>
+
+      <footer className="footer">
+        <div className="footer-content">
+
+          <div className="footer-brand">
+            <img
+              src="/papervault-logo.png"
+              alt="PaperVault"
+              className="footer-logo"
+            />
+
+            <p>Previous papers. Better preparation.</p>
+          </div>
+
+          <div className="footer-links">
+            <button onClick={() => setActivePage("home")}>
+              Home
+            </button>
+
+            <button
+              onClick={() => {
+                setActivePage("home");
+
+                setTimeout(() => {
+                  document.getElementById("browse")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }, 100);
+              }}
+            >
+              Browse Papers
+            </button>
+
+            <button onClick={() => setShowUpload(true)}>
+              Upload Paper
+            </button>
+
+            <button onClick={() => setActivePage("about")}>
+              About Us
+            </button>
+
+            <a href="mailto:papervault34@gmail.com">
+              Contact
+            </a>
+          </div>
+
+        </div>
+
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} PaperVault</span>
+          <span>Built for Students 🎓</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+if (activePage === "contact") {
+  return (
+    <div className="app">
+      <nav className="navbar">
+        <div className="logo">
+          <img
+            src="/papervault-logo.png"
+            alt="PaperVault"
+            className="logo-image"
+          />
+        </div>
+
+        <div className="nav-links">
+          <button onClick={() => setActivePage("home")}>
+            Home
+          </button>
+
+          <button
+            onClick={() => {
+              setActivePage("home");
+
+              setTimeout(() => {
+                document.getElementById("browse")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }, 100);
+            }}
+          >
+            Browse Papers
+          </button>
+        </div>
+      </nav>
+
+      <main className="legal-page">
+        <div className="legal-container">
+
+          <span className="legal-badge">CONTACT PAPERVAULT</span>
+
+          <h1>Contact Us</h1>
+
+          <p className="legal-intro">
+            Have a question, suggestion, feedback or concern?
+            We would love to hear from you.
+          </p>
+
+          <section>
+            <h2>Get in Touch</h2>
+            <p>
+              For general questions, suggestions or feedback about
+              PaperVault, you can contact us through email.
+            </p>
+
+            <p>
+              <a href="mailto:papervault34@gmail.com">
+                papervault34@gmail.com
+              </a>
+            </p>
+          </section>
+
+          <section>
+            <h2>Paper Related Concerns</h2>
+            <p>
+              If you believe a question paper uploaded on PaperVault
+              should be removed or you have a copyright-related concern,
+              please contact us with the relevant details.
+            </p>
+          </section>
+
+          <section>
+            <h2>Suggestions & Feedback</h2>
+            <p>
+              Your feedback helps us improve PaperVault and make it more
+              useful for students. Feel free to share suggestions about
+              features, colleges, subjects or the overall experience.
+            </p>
+          </section>
+
+        </div>
+      </main>
+
+      <footer className="footer">
+        <div className="footer-content">
+
+          <div className="footer-brand">
+            <img
+              src="/papervault-logo.png"
+              alt="PaperVault"
+              className="footer-logo"
+            />
+
+            <p>Previous papers. Better preparation.</p>
+          </div>
+
+          <div className="footer-links">
+            <button onClick={() => setActivePage("home")}>
+              Home
+            </button>
+
+            <button
+              onClick={() => {
+                setActivePage("home");
+
+                setTimeout(() => {
+                  document.getElementById("browse")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }, 100);
+              }}
+            >
+              Browse Papers
+            </button>
+
+            <button onClick={() => setShowUpload(true)}>
+              Upload Paper
+            </button>
+
+            <button onClick={() => setActivePage("about")}>
+              About Us
+            </button>
+
+            <button onClick={() => setActivePage("contact")}>
+              Contact
+            </button>
+          </div>
+
+        </div>
+
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} PaperVault</span>
+          <span>Built for Students 🎓</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+if (activePage === "privacy") {
+  return (
+    <div className="app">
+      <nav className="navbar">
+        <div className="logo">
+          <img
+            src="/papervault-logo.png"
+            alt="PaperVault"
+            className="logo-image"
+          />
+        </div>
+
+        <div className="nav-links">
+          <button onClick={() => setActivePage("home")}>
+            Home
+          </button>
+
+          <button
+            onClick={() => {
+              setActivePage("home");
+
+              setTimeout(() => {
+                document.getElementById("browse")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }, 100);
+            }}
+          >
+            Browse Papers
+          </button>
+        </div>
+      </nav>
+
+      <main className="legal-page">
+        <div className="legal-container">
+
+          <span className="legal-badge">PAPERVAULT PRIVACY</span>
+
+          <h1>Privacy Policy</h1>
+
+          <p className="legal-intro">
+            Your privacy matters to us. This Privacy Policy explains how
+            PaperVault handles information when you use our website.
+          </p>
+
+          <section>
+            <h2>Information We Collect</h2>
+            <p>
+              PaperVault may collect information that you voluntarily provide
+              when using features such as uploading academic papers or
+              contacting us.
+            </p>
+          </section>
+
+          <section>
+            <h2>Uploaded Papers</h2>
+            <p>
+              When you upload a question paper, the information associated
+              with the submission may be stored on our platform so that the
+              paper can be reviewed and, if approved, made available to
+              other students.
+            </p>
+          </section>
+
+          <section>
+            <h2>How We Use Information</h2>
+            <p>
+              Information collected through PaperVault may be used to operate,
+              maintain and improve the website, review uploaded content,
+              respond to users and maintain platform security.
+            </p>
+          </section>
+
+          <section>
+            <h2>Cookies and Similar Technologies</h2>
+            <p>
+              PaperVault may use cookies or similar technologies in the future
+              to improve website functionality, understand usage and support
+              services such as analytics or advertising.
+            </p>
+          </section>
+
+          <section>
+            <h2>Third-Party Services</h2>
+            <p>
+              PaperVault may use third-party services for hosting, database
+              management, storage, analytics or other website functionality.
+              These services may process information according to their own
+              privacy policies.
+            </p>
+          </section>
+
+          <section>
+            <h2>Data Security</h2>
+            <p>
+              We take reasonable measures to protect information handled by
+              PaperVault. However, no online service can guarantee complete
+              security of information.
+            </p>
+          </section>
+
+          <section>
+            <h2>Changes to This Policy</h2>
+            <p>
+              We may update this Privacy Policy from time to time. Any changes
+              will be reflected on this page.
+            </p>
+          </section>
+
+          <section>
+            <h2>Contact Us</h2>
+            <p>
+              If you have questions about this Privacy Policy, contact us at{" "}
+              <a href="mailto:papervault34@gmail.com">
+                papervault34@gmail.com
+              </a>.
+            </p>
+          </section>
+
+        </div>
+      </main>
+
+      <footer className="footer">
+        <div className="footer-content">
+
+          <div className="footer-brand">
+            <img
+              src="/papervault-logo.png"
+              alt="PaperVault"
+              className="footer-logo"
+            />
+
+            <p>Previous papers. Better preparation.</p>
+          </div>
+
+          <div className="footer-links">
+            <button onClick={() => setActivePage("home")}>
+              Home
+            </button>
+
+            <button
+              onClick={() => {
+                setActivePage("home");
+
+                setTimeout(() => {
+                  document.getElementById("browse")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }, 100);
+              }}
+            >
+              Browse Papers
+            </button>
+
+            <button onClick={() => setShowUpload(true)}>
+              Upload Paper
+            </button>
+
+            <button onClick={() => setActivePage("about")}>
+              About Us
+            </button>
+
+            <button onClick={() => setActivePage("contact")}>
+              Contact
+            </button>
+
+            <button onClick={() => setActivePage("privacy")}>
+              Privacy Policy
+            </button>
+          </div>
+
+        </div>
+
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} PaperVault</span>
+          <span>Built for Students 🎓</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+if (activePage === "terms") {
+  return (
+    <div className="app">
+      <nav className="navbar">
+        <div className="logo">
+          <img
+            src="/papervault-logo.png"
+            alt="PaperVault"
+            className="logo-image"
+          />
+        </div>
+
+        <div className="nav-links">
+          <button onClick={() => setActivePage("home")}>
+            Home
+          </button>
+
+          <button
+            onClick={() => {
+              setActivePage("home");
+
+              setTimeout(() => {
+                document.getElementById("browse")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }, 100);
+            }}
+          >
+            Browse Papers
+          </button>
+        </div>
+      </nav>
+
+      <main className="legal-page">
+        <div className="legal-container">
+
+          <span className="legal-badge">PAPERVAULT TERMS</span>
+
+          <h1>Terms & Conditions</h1>
+
+          <p className="legal-intro">
+            By using PaperVault, you agree to follow these Terms &
+            Conditions. Please read them carefully before using the website.
+          </p>
+
+          <section>
+            <h2>Use of the Website</h2>
+            <p>
+              PaperVault is provided as an educational resource for students.
+              You agree to use the website only for lawful purposes and in a
+              responsible manner.
+            </p>
+          </section>
+
+          <section>
+            <h2>Uploaded Content</h2>
+            <p>
+              Users may upload academic question papers and related
+              educational material. By uploading content, you confirm that
+              you have the right or permission to share the material.
+            </p>
+          </section>
+
+          <section>
+            <h2>Content Review</h2>
+            <p>
+              Uploaded papers may be reviewed by PaperVault administrators
+              before being made publicly available. We reserve the right to
+              approve, reject or remove uploaded content.
+            </p>
+          </section>
+
+          <section>
+            <h2>Copyright</h2>
+            <p>
+              PaperVault respects intellectual property rights. If you believe
+              that any content available on the website infringes your rights,
+              please contact us with the relevant details so the matter can be
+              reviewed.
+            </p>
+          </section>
+
+          <section>
+            <h2>Accuracy of Information</h2>
+            <p>
+              PaperVault aims to provide useful academic resources, but we do
+              not guarantee that every paper, description or other information
+              available on the website is complete, accurate or error-free.
+            </p>
+          </section>
+
+          <section>
+            <h2>Third-Party Services</h2>
+            <p>
+              PaperVault may use third-party services for hosting, storage,
+              database management, analytics or other functionality. Their use
+              may be subject to separate terms and policies.
+            </p>
+          </section>
+
+          <section>
+            <h2>Limitation of Liability</h2>
+            <p>
+              PaperVault is provided on an "as available" basis. We are not
+              responsible for any loss or damage resulting from the use of
+              information or resources available through the website.
+            </p>
+          </section>
+
+          <section>
+            <h2>Changes to These Terms</h2>
+            <p>
+              We may update these Terms & Conditions from time to time.
+              Continued use of PaperVault after changes are published means
+              that you accept the updated terms.
+            </p>
+          </section>
+
+          <section>
+            <h2>Contact Us</h2>
+            <p>
+              If you have questions regarding these Terms & Conditions,
+              contact us at{" "}
+              <a href="mailto:papervault34@gmail.com">
+                papervault34@gmail.com
+              </a>.
+            </p>
+          </section>
+
+        </div>
+      </main>
+
+      <footer className="footer">
+        <div className="footer-content">
+
+          <div className="footer-brand">
+            <img
+              src="/papervault-logo.png"
+              alt="PaperVault"
+              className="footer-logo"
+            />
+
+            <p>Previous papers. Better preparation.</p>
+          </div>
+
+          <div className="footer-links">
+            <button onClick={() => setActivePage("home")}>
+              Home
+            </button>
+
+            <button
+              onClick={() => {
+                setActivePage("home");
+
+                setTimeout(() => {
+                  document.getElementById("browse")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }, 100);
+              }}
+            >
+              Browse Papers
+            </button>
+
+            <button onClick={() => setShowUpload(true)}>
+              Upload Paper
+            </button>
+
+            <button onClick={() => setActivePage("about")}>
+              About Us
+            </button>
+
+            <button onClick={() => setActivePage("contact")}>
+              Contact
+            </button>
+
+            <button onClick={() => setActivePage("privacy")}>
+              Privacy Policy
+            </button>
+
+            <button onClick={() => setActivePage("terms")}>
+              Terms & Conditions
+            </button>
+          </div>
+
+        </div>
+
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} PaperVault</span>
+          <span>Built for Students 🎓</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+if (activePage === "disclaimer") {
+  return (
+    <div className="app">
+      <nav className="navbar">
+        <div className="logo">
+          <img
+            src="/papervault-logo.png"
+            alt="PaperVault"
+            className="logo-image"
+          />
+        </div>
+
+        <div className="nav-links">
+          <button onClick={() => setActivePage("home")}>
+            Home
+          </button>
+
+          <button
+            onClick={() => {
+              setActivePage("home");
+
+              setTimeout(() => {
+                document.getElementById("browse")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }, 100);
+            }}
+          >
+            Browse Papers
+          </button>
+        </div>
+      </nav>
+
+      <main className="legal-page">
+        <div className="legal-container">
+
+          <span className="legal-badge">PAPERVAULT DISCLAIMER</span>
+
+          <h1>Disclaimer</h1>
+
+          <p className="legal-intro">
+            The information and academic resources available on PaperVault
+            are provided for educational and informational purposes only.
+          </p>
+
+          <section>
+            <h2>Educational Purpose</h2>
+            <p>
+              PaperVault is created to help students access previous-year
+              question papers and use them as a study resource. The papers
+              available on the platform should not be considered an official
+              representation of any college, university or examination body.
+            </p>
+          </section>
+
+          <section>
+            <h2>User-Uploaded Content</h2>
+            <p>
+              Some question papers may be uploaded by students or other
+              users. PaperVault does not claim ownership of user-uploaded
+              content unless explicitly stated.
+            </p>
+          </section>
+
+          <section>
+            <h2>Accuracy of Content</h2>
+            <p>
+              We try to keep the information on PaperVault accurate and
+              useful. However, we cannot guarantee that every uploaded paper,
+              subject name, year, examination type or other information is
+              completely accurate or error-free.
+            </p>
+          </section>
+
+          <section>
+            <h2>Official Affiliation</h2>
+            <p>
+              Unless explicitly stated, PaperVault is not affiliated with,
+              endorsed by or officially connected to any college, university,
+              examination authority or educational institution whose materials
+              may appear on the platform.
+            </p>
+          </section>
+
+          <section>
+            <h2>Copyright Concerns</h2>
+            <p>
+              If you believe that any content available on PaperVault
+              infringes your copyright or other rights, please contact us.
+              We will review legitimate concerns and take appropriate action.
+            </p>
+          </section>
+
+          <section>
+            <h2>External Services</h2>
+            <p>
+              PaperVault may use third-party services for hosting, storage,
+              database management, analytics or other functionality. We are
+              not responsible for the policies or practices of third-party
+              services.
+            </p>
+          </section>
+
+          <section>
+            <h2>Contact Us</h2>
+            <p>
+              For questions, concerns or copyright-related requests, contact
+              us at{" "}
+              <a href="mailto:papervault34@gmail.com">
+                papervault34@gmail.com
+              </a>.
+            </p>
+          </section>
+
+        </div>
+      </main>
+
+      <footer className="footer">
+        <div className="footer-content">
+
+          <div className="footer-brand">
+            <img
+              src="/papervault-logo.png"
+              alt="PaperVault"
+              className="footer-logo"
+            />
+
+            <p>Previous papers. Better preparation.</p>
+          </div>
+
+          <div className="footer-links">
+            <button onClick={() => setActivePage("home")}>
+              Home
+            </button>
+
+            <button
+              onClick={() => {
+                setActivePage("home");
+
+                setTimeout(() => {
+                  document.getElementById("browse")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }, 100);
+              }}
+            >
+              Browse Papers
+            </button>
+
+            <button onClick={() => setShowUpload(true)}>
+              Upload Paper
+            </button>
+
+            <button onClick={() => setActivePage("about")}>
+              About Us
+            </button>
+
+            <button onClick={() => setActivePage("contact")}>
+              Contact
+            </button>
+
+            <button onClick={() => setActivePage("privacy")}>
+              Privacy Policy
+            </button>
+
+            <button onClick={() => setActivePage("terms")}>
+              Terms & Conditions
+            </button>
+
+            <button onClick={() => setActivePage("disclaimer")}>
+              Disclaimer
+            </button>
+          </div>
+
+        </div>
+
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} PaperVault</span>
+          <span>Built for Students 🎓</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+if (activePage === "copyright") {
+  return (
+    <div className="app">
+      <nav className="navbar">
+        <div className="logo">
+          <img
+            src="/papervault-logo.png"
+            alt="PaperVault"
+            className="logo-image"
+          />
+        </div>
+
+        <div className="nav-links">
+          <button onClick={() => setActivePage("home")}>
+            Home
+          </button>
+
+          <button
+            onClick={() => {
+              setActivePage("home");
+
+              setTimeout(() => {
+                document.getElementById("browse")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }, 100);
+            }}
+          >
+            Browse Papers
+          </button>
+        </div>
+      </nav>
+
+      <main className="legal-page">
+        <div className="legal-container">
+
+          <span className="legal-badge">COPYRIGHT & TAKEDOWN</span>
+
+          <h1>Copyright & Takedown Policy</h1>
+
+          <p className="legal-intro">
+            PaperVault respects intellectual property rights and provides a
+            process for reporting content that may infringe copyright.
+          </p>
+
+          <section>
+            <h2>Respect for Copyright</h2>
+            <p>
+              PaperVault respects the intellectual property rights of authors,
+              institutions and copyright holders. We do not intend to
+              knowingly host content that infringes the rights of others.
+            </p>
+          </section>
+
+          <section>
+            <h2>User-Uploaded Content</h2>
+            <p>
+              Some academic papers available on PaperVault may be submitted
+              by students or other users. Users are responsible for ensuring
+              that they have the necessary rights or permission to upload
+              material.
+            </p>
+          </section>
+
+          <section>
+            <h2>How to Report Content</h2>
+            <p>
+              If you believe that a paper or other content on PaperVault
+              infringes your copyright or other rights, please contact us
+              with enough information for us to identify and review the
+              reported content.
+            </p>
+          </section>
+
+          <section>
+            <h2>Information to Include</h2>
+            <p>
+              When submitting a takedown request, please include the relevant
+              paper or page, a description of the content in question, your
+              reason for the request and your contact information.
+            </p>
+          </section>
+
+          <section>
+            <h2>Review and Removal</h2>
+            <p>
+              We may review reported content and take appropriate action,
+              which may include removing or restricting access to the
+              reported material.
+            </p>
+          </section>
+
+          <section>
+            <h2>False or Misleading Reports</h2>
+            <p>
+              Please submit copyright or takedown requests only when you have
+              a genuine concern. Providing false or misleading information
+              may delay the review process.
+            </p>
+          </section>
+
+          <section>
+            <h2>Contact</h2>
+            <p>
+              Copyright and takedown requests can be sent to{" "}
+              <a href="mailto:papervault34@gmail.com">
+                papervault34@gmail.com
+              </a>.
+            </p>
+          </section>
+
+        </div>
+      </main>
+
+      <footer className="footer">
+        <div className="footer-content">
+
+          <div className="footer-brand">
+            <img
+              src="/papervault-logo.png"
+              alt="PaperVault"
+              className="footer-logo"
+            />
+
+            <p>Previous papers. Better preparation.</p>
+          </div>
+
+          <div className="footer-links">
+            <button onClick={() => setActivePage("home")}>
+              Home
+            </button>
+
+            <button
+              onClick={() => {
+                setActivePage("home");
+
+                setTimeout(() => {
+                  document.getElementById("browse")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }, 100);
+              }}
+            >
+              Browse Papers
+            </button>
+
+            <button onClick={() => setShowUpload(true)}>
+              Upload Paper
+            </button>
+
+            <button onClick={() => setActivePage("about")}>
+              About Us
+            </button>
+
+            <button onClick={() => setActivePage("contact")}>
+              Contact
+            </button>
+
+            <button onClick={() => setActivePage("privacy")}>
+              Privacy Policy
+            </button>
+
+            <button onClick={() => setActivePage("terms")}>
+              Terms & Conditions
+            </button>
+
+            <button onClick={() => setActivePage("disclaimer")}>
+              Disclaimer
+            </button>
+
+            <button onClick={() => setActivePage("copyright")}>
+              Copyright / Takedown
+            </button>
+          </div>
+
+        </div>
+
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} PaperVault</span>
+          <span>Built for Students 🎓</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
 if (showLanding) {
   return (
     <div className={`app landing-page ${landingExiting ? "landing-exiting" : ""}`}>
@@ -2054,9 +3089,25 @@ if (showLanding) {
     Upload Paper
   </button>
 
-  <a href="mailto:papervault34@gmail.com">
-    Feedback / Contact
-  </a>
+  <button onClick={() => setActivePage("about")}>
+    About Us
+  </button>
+
+  <button onClick={() => setActivePage("contact")}>
+  Contact
+</button>
+<button onClick={() => setActivePage("privacy")}>
+  Privacy Policy
+</button>
+<button onClick={() => setActivePage("terms")}>
+  Terms & Conditions
+</button>
+<button onClick={() => setActivePage("disclaimer")}>
+  Disclaimer
+</button>
+<button onClick={() => setActivePage("copyright")}>
+  Copyright / Takedown
+</button>
 </div>
 
         </div>
