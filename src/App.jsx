@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import { supabase } from "./lib/supabaseClient";
 const collegeData = {
@@ -189,8 +190,37 @@ const collegeData = {
     },
   },
 };
+const pathToPage = {
+  "/": "home",
+  "/about": "about",
+  "/contact": "contact",
+  "/privacy-policy": "privacy",
+  "/terms": "terms",
+  "/disclaimer": "disclaimer",
+  "/copyright": "copyright",
+};
 
+const pageToPath = Object.fromEntries(
+  Object.entries(pathToPage).map(([path, page]) => [page, path])
+);
 function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+const goToPage = (page) => {
+  setActivePage(page);
+
+  const path = pageToPath[page] || "/";
+  if (location.pathname !== path) {
+    navigate(path);
+  }
+
+  setShowLanding(false);
+  setShowUpload(false);
+  setShowAdmin(false);
+  setShowAdminLogin(false);
+  setLandingExiting(false);
+};
   const [college, setCollege] = useState("");
   const [course, setCourse] = useState("");
   const [branch, setBranch] = useState("");
@@ -199,23 +229,23 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUpload, setShowUpload] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [showLanding, setShowLanding] = useState(true);
-  const [activePage, setActivePage] = useState("home");
+  const [showLanding, setShowLanding] = useState(
+  window.location.pathname === "/"
+  );
+  const [activePage, setActivePage] = useState(
+  pathToPage[window.location.pathname] || "home"
+);
   const [landingExiting, setLandingExiting] = useState(false);
-  const goToBrowse = () => {
-  setLandingExiting(true);
+  
+  
+const goToBrowse = () => {
+  goToPage("home");
 
   setTimeout(() => {
-    setShowLanding(false);
-
-    setTimeout(() => {
-      document.getElementById("browse")?.scrollIntoView({
-        behavior: "smooth",
-      });
-
-      setLandingExiting(false);
-    }, 100);
-  }, 300);
+    document.getElementById("browse")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, 400);
 };
   const [adminUser, setAdminUser] = useState(null);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -236,6 +266,17 @@ function App() {
   const [paperData, setPaperData] = useState([]);
   const [pendingPapers, setPendingPapers] = useState([]);
   const [rejectedPapers, setRejectedPapers] = useState([]);
+  useEffect(() => {
+  const page = pathToPage[location.pathname];
+
+  if (page && page !== activePage) {
+    setActivePage(page);
+  }
+
+  if (location.pathname !== "/") {
+    setShowLanding(false);
+  }
+}, [location.pathname, activePage]);
     useEffect(() => {
   const fetchPapers = async () => {
     const { data, error } = await supabase
@@ -864,23 +905,33 @@ if (activePage === "about") {
         </div>
 
         <div className="nav-links">
-          <button onClick={() => setActivePage("home")}>
-            Home
-          </button>
-
           <button
-            onClick={() => {
-              setActivePage("home");
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-              setTimeout(() => {
-                document.getElementById("browse")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }, 100);
-            }}
-          >
-            Browse Papers
-          </button>
+          
+<button
+  onClick={() => {
+    goToPage("home");
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 400);
+  }}
+>
+  Browse Papers
+</button>
         </div>
       </nav>
 
@@ -964,9 +1015,18 @@ if (activePage === "about") {
           </div>
 
           <div className="footer-links">
-            <button onClick={() => setActivePage("home")}>
-              Home
-            </button>
+            <button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
             <button
               onClick={() => {
@@ -976,7 +1036,7 @@ if (activePage === "about") {
                   document.getElementById("browse")?.scrollIntoView({
                     behavior: "smooth",
                   });
-                }, 100);
+                }, 400);
               }}
             >
               Browse Papers
@@ -986,7 +1046,7 @@ if (activePage === "about") {
               Upload Paper
             </button>
 
-            <button onClick={() => setActivePage("about")}>
+            <button onClick={() => goToPage("about")}>
               About Us
             </button>
 
@@ -1018,23 +1078,33 @@ if (activePage === "contact") {
         </div>
 
         <div className="nav-links">
-          <button onClick={() => setActivePage("home")}>
-            Home
-          </button>
-
           <button
-            onClick={() => {
-              setActivePage("home");
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-              setTimeout(() => {
-                document.getElementById("browse")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }, 100);
-            }}
-          >
-            Browse Papers
-          </button>
+          
+<button
+  onClick={() => {
+    goToPage("home");
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 400);
+  }}
+>
+  Browse Papers
+</button>
         </div>
       </nav>
 
@@ -1099,9 +1169,18 @@ if (activePage === "contact") {
           </div>
 
           <div className="footer-links">
-            <button onClick={() => setActivePage("home")}>
-              Home
-            </button>
+            <button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
             <button
               onClick={() => {
@@ -1111,7 +1190,7 @@ if (activePage === "contact") {
                   document.getElementById("browse")?.scrollIntoView({
                     behavior: "smooth",
                   });
-                }, 100);
+                }, 400);
               }}
             >
               Browse Papers
@@ -1121,11 +1200,11 @@ if (activePage === "contact") {
               Upload Paper
             </button>
 
-            <button onClick={() => setActivePage("about")}>
+            <button onClick={() => goToPage("about")}>
               About Us
             </button>
 
-            <button onClick={() => setActivePage("contact")}>
+            <button onClick={() => goToPage("contact")}>
               Contact
             </button>
           </div>
@@ -1153,23 +1232,35 @@ if (activePage === "privacy") {
         </div>
 
         <div className="nav-links">
-          <button onClick={() => setActivePage("home")}>
-            Home
-          </button>
-
           <button
-            onClick={() => {
-              setActivePage("home");
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-              setTimeout(() => {
-                document.getElementById("browse")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }, 100);
-            }}
-          >
-            Browse Papers
-          </button>
+          
+<button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 500);
+  }}
+>
+  Browse Papers
+</button>
         </div>
       </nav>
 
@@ -1276,37 +1367,49 @@ if (activePage === "privacy") {
           </div>
 
           <div className="footer-links">
-            <button onClick={() => setActivePage("home")}>
-              Home
-            </button>
-
             <button
-              onClick={() => {
-                setActivePage("home");
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-                setTimeout(() => {
-                  document.getElementById("browse")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
-                }, 100);
-              }}
-            >
-              Browse Papers
-            </button>
+            
+<button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 500);
+  }}
+>
+  Browse Papers
+</button>
 
             <button onClick={() => setShowUpload(true)}>
               Upload Paper
             </button>
 
-            <button onClick={() => setActivePage("about")}>
-              About Us
-            </button>
+            <button onClick={() => goToPage("about")}>
+  About Us
+</button>
 
-            <button onClick={() => setActivePage("contact")}>
+            <button onClick={() => goToPage("contact")}>
               Contact
             </button>
 
-            <button onClick={() => setActivePage("privacy")}>
+            <button onClick={() => goToPage("privacy")}>
               Privacy Policy
             </button>
           </div>
@@ -1334,23 +1437,35 @@ if (activePage === "terms") {
         </div>
 
         <div className="nav-links">
-          <button onClick={() => setActivePage("home")}>
-            Home
-          </button>
-
           <button
-            onClick={() => {
-              setActivePage("home");
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-              setTimeout(() => {
-                document.getElementById("browse")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }, 100);
-            }}
-          >
-            Browse Papers
-          </button>
+          
+<button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 500);
+  }}
+>
+  Browse Papers
+</button>
         </div>
       </nav>
 
@@ -1467,41 +1582,53 @@ if (activePage === "terms") {
           </div>
 
           <div className="footer-links">
-            <button onClick={() => setActivePage("home")}>
-              Home
-            </button>
+           <button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-            <button
-              onClick={() => {
-                setActivePage("home");
+            
+<button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(false);
 
-                setTimeout(() => {
-                  document.getElementById("browse")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
-                }, 100);
-              }}
-            >
-              Browse Papers
-            </button>
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 500);
+  }}
+>
+  Browse Papers
+</button>
 
             <button onClick={() => setShowUpload(true)}>
               Upload Paper
             </button>
 
-            <button onClick={() => setActivePage("about")}>
+            <button onClick={() => goToPage("about")}>
               About Us
             </button>
 
-            <button onClick={() => setActivePage("contact")}>
+            <button onClick={() => goToPage("contact")}>
               Contact
             </button>
 
-            <button onClick={() => setActivePage("privacy")}>
+            <button onClick={() => goToPage("privacy")}>
               Privacy Policy
             </button>
 
-            <button onClick={() => setActivePage("terms")}>
+            <button onClick={() => goToPage("terms")}>
               Terms & Conditions
             </button>
           </div>
@@ -1529,23 +1656,35 @@ if (activePage === "disclaimer") {
         </div>
 
         <div className="nav-links">
-          <button onClick={() => setActivePage("home")}>
-            Home
-          </button>
-
           <button
-            onClick={() => {
-              setActivePage("home");
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-              setTimeout(() => {
-                document.getElementById("browse")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }, 100);
-            }}
-          >
-            Browse Papers
-          </button>
+          
+<button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 500);
+  }}
+>
+  Browse Papers
+</button>
         </div>
       </nav>
 
@@ -1647,45 +1786,57 @@ if (activePage === "disclaimer") {
           </div>
 
           <div className="footer-links">
-            <button onClick={() => setActivePage("home")}>
-              Home
-            </button>
-
             <button
-              onClick={() => {
-                setActivePage("home");
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-                setTimeout(() => {
-                  document.getElementById("browse")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
-                }, 100);
-              }}
-            >
-              Browse Papers
-            </button>
+            
+<button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 500);
+  }}
+>
+  Browse Papers
+</button>
 
             <button onClick={() => setShowUpload(true)}>
               Upload Paper
             </button>
 
-            <button onClick={() => setActivePage("about")}>
+            <button onClick={() => goToPage("about")}>
               About Us
             </button>
 
-            <button onClick={() => setActivePage("contact")}>
+            <button onClick={() => goToPage("contact")}>
               Contact
             </button>
 
-            <button onClick={() => setActivePage("privacy")}>
+            <button onClick={() => goToPage("privacy")}>
               Privacy Policy
             </button>
 
-            <button onClick={() => setActivePage("terms")}>
+            <button onClick={() => goToPage("terms")}>
               Terms & Conditions
             </button>
 
-            <button onClick={() => setActivePage("disclaimer")}>
+            <button onClick={() => goToPage("disclaimer")}>
               Disclaimer
             </button>
           </div>
@@ -1713,23 +1864,35 @@ if (activePage === "copyright") {
         </div>
 
         <div className="nav-links">
-          <button onClick={() => setActivePage("home")}>
-            Home
-          </button>
+         <button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-          <button
-            onClick={() => {
-              setActivePage("home");
+          
+<button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(false);
 
-              setTimeout(() => {
-                document.getElementById("browse")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }, 100);
-            }}
-          >
-            Browse Papers
-          </button>
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 500);
+  }}
+>
+  Browse Papers
+</button>
         </div>
       </nav>
 
@@ -1828,49 +1991,61 @@ if (activePage === "copyright") {
           </div>
 
           <div className="footer-links">
-            <button onClick={() => setActivePage("home")}>
-              Home
-            </button>
-
             <button
-              onClick={() => {
-                setActivePage("home");
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(true);
+    setShowUpload(false);
+    setShowAdmin(false);
+    setShowAdminLogin(false);
+  }}
+>
+  Home
+</button>
 
-                setTimeout(() => {
-                  document.getElementById("browse")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
-                }, 100);
-              }}
-            >
-              Browse Papers
-            </button>
+            
+<button
+  onClick={() => {
+    navigate("/");
+    setActivePage("home");
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 500);
+  }}
+>
+  Browse Papers
+</button>
 
             <button onClick={() => setShowUpload(true)}>
               Upload Paper
             </button>
 
-            <button onClick={() => setActivePage("about")}>
+            <button onClick={() => goToPage("about")}>
               About Us
             </button>
 
-            <button onClick={() => setActivePage("contact")}>
+            <button onClick={() => goToPage("contact")}>
               Contact
             </button>
 
-            <button onClick={() => setActivePage("privacy")}>
+            <button onClick={() => goToPage("privacy")}>
               Privacy Policy
             </button>
 
-            <button onClick={() => setActivePage("terms")}>
+            <button onClick={() => goToPage("terms")}>
               Terms & Conditions
             </button>
 
-            <button onClick={() => setActivePage("disclaimer")}>
+            <button onClick={() => goToPage("disclaimer")}>
               Disclaimer
             </button>
 
-            <button onClick={() => setActivePage("copyright")}>
+            <button onClick={() => goToPage("copyright")}>
               Copyright / Takedown
             </button>
           </div>
@@ -3083,29 +3258,50 @@ if (showLanding) {
 
           <div className="footer-links">
   <a href="#home">Home</a>
-  <a href="#browse">Browse Papers</a>
+  <a
+  href="#browse"
+  onClick={(e) => {
+    e.preventDefault();
+    setActivePage("home");
+    navigate("/");
+    setShowLanding(false);
+
+    setTimeout(() => {
+      document.getElementById("browse")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 400);
+  }}
+>
+  Browse Papers
+</a>
 
   <button onClick={() => setShowUpload(true)}>
     Upload Paper
   </button>
 
-  <button onClick={() => setActivePage("about")}>
-    About Us
-  </button>
+  
+<button onClick={() => goToPage("about")}>
+  About Us
+</button>
 
-  <button onClick={() => setActivePage("contact")}>
+<button onClick={() => goToPage("contact")}>
   Contact
 </button>
-<button onClick={() => setActivePage("privacy")}>
+
+<button onClick={() => goToPage("privacy")}>
   Privacy Policy
 </button>
-<button onClick={() => setActivePage("terms")}>
+
+<button onClick={() => goToPage("terms")}>
   Terms & Conditions
 </button>
-<button onClick={() => setActivePage("disclaimer")}>
+
+<button onClick={() => goToPage("disclaimer")}>
   Disclaimer
 </button>
-<button onClick={() => setActivePage("copyright")}>
+
+<button onClick={() => goToPage("copyright")}>
   Copyright / Takedown
 </button>
 </div>
